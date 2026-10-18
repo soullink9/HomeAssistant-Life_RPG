@@ -15,7 +15,7 @@
     "panel_custom",
     "websocket_api"
   ],
-  "documentation": "https://github.com/soullink9/HomeAssistant-Life_RPG",
+  "documentation": "https://github.com/soullink9/HomeAssistant-Life_RPG/wiki",
   "integration_type": "service",
   "iot_class": "calculated",
   "issue_tracker": "https://github.com/soullink9/HomeAssistant-Life_RPG/issues",
