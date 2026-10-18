@@ -2,7 +2,7 @@ This project was primarily created for personal use and for my family. While I m
 
 Note: Built with the assistance of Claude.ai. I’m putting it here now so you don't have to hunt for it below.
 
-=========================================================================================================
+=====================================================================================
 
 # Life RPG: the System
 
