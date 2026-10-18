@@ -1,0 +1,35 @@
+# Evening nudge when today isn't cleared yet
+# Settings → Automations & scenes → Create automation → Create new automation → ⋮ → Edit in YAML.
+# Select everything in the editor, paste this whole file over it, then change
+# notify.mobile_app_your_phone to your phone and "user_" to your adventurer's prefix. Save.
+alias: Life RPG - secure your streak
+description: At 8 pm, if today isn't cleared, say what can still be done tonight.
+mode: single
+triggers:
+  - trigger: time
+    at: "20:00:00"
+conditions:
+  - condition: state
+    entity_id: sensor.user_streak
+    attribute: day_cleared
+    state: false
+actions:
+  - action: notify.mobile_app_your_phone
+    data:
+      title: >
+        {% if state_attr('sensor.user_streak', 'penalty_quest') %}[Penalty quest] still open{% else %}{{ state_attr('sensor.user_streak', 'quests_left_to_clear') }} more quest(s) to clear today{% endif %}
+      message: >
+        {% set s = states('sensor.user_streak') | int(0) %}
+        {% set ns = namespace(open=[]) %}
+        {% for a, what in [('stamina', 'steps'), ('strength', 'floors'), ('intelligence', 'water')] %}
+          {% set e = 'sensor.user_' ~ a ~ '_quest' %}
+          {% if states(e) not in ['unknown', 'unavailable'] and not state_attr(e, 'done') %}
+            {% set ns.open = ns.open + [what ~ ' ' ~ states(e) ~ '%'] %}
+          {% endif %}
+        {% endfor %}
+        {% if s > 0 %}Your {{ s }}-day streak{% if state_attr('sensor.user_streak', 'shields') %} (shield ready){% endif %} is on the line tonight.{% else %}Clear today to start a new streak.{% endif %}
+        {% if ns.open %}Still doable: {{ ns.open | join(', ') }}.{% endif %}
+        {% if states('sensor.user_labyrinth') | int(100) > 0 %}The floor {{ state_attr('sensor.user_labyrinth', 'floor') }} guardian has {{ states('sensor.user_labyrinth') }}% HP left.{% endif %}
+      data:
+        clickAction: /life-rpg
+        url: /life-rpg

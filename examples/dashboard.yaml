@@ -1,0 +1,48 @@
+# Optional "Adventurer" dashboard view. The full game lives in the System panel in the sidebar;
+# this puts the highlights on a normal dashboard. Paste under `views:` in a dashboard's raw
+# configuration editor. The Life RPG cards load automatically (no HACS, no resources to add).
+# Cards show the adventurer linked to whoever is logged in; add `adventurer: Mira` to pin one.
+# Replace "user_" with your adventurer's prefix for the built-in cards.
+# Tapping any Life RPG card opens the System panel.
+title: Adventurer
+path: adventurer
+icon: mdi:sword-cross
+type: sections
+max_columns: 3
+sections:
+  - type: grid
+    cards:
+      - type: custom:life-rpg-card
+        view: compact
+      - type: custom:life-rpg-card
+        view: quests
+  - type: grid
+    cards:
+      - type: custom:life-rpg-card
+        view: status
+  - type: grid
+    cards:
+      - type: custom:life-rpg-card
+        view: labyrinth
+      - type: tile
+        entity: sensor.user_gold
+        name: Gold
+        icon: mdi:cash-multiple
+      - type: tile
+        entity: sensor.user_daily_choice
+        name: Today's choice
+        icon: mdi:cards-playing-outline
+      - type: heading
+        heading: Adventure log
+        icon: mdi:book-open-variant
+      - type: logbook
+        target:
+          entity_id: event.user_achievements
+        hours_to_show: 168
+      - type: statistics-graph
+        title: Daily XP
+        entities: [sensor.user_xp]
+        stat_types: [change]
+        period: day
+        days_to_show: 30
+        chart_type: bar

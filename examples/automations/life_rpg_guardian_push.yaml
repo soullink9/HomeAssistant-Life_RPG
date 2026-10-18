@@ -1,0 +1,27 @@
+# Sunday push when the guardian is close to falling
+# Settings → Automations & scenes → Create automation → Create new automation → ⋮ → Edit in YAML.
+# Select everything in the editor, paste this whole file over it, then change
+# notify.mobile_app_your_phone to your phone and "user_" to your adventurer's prefix. Save.
+alias: Life RPG - guardian within reach
+description: Sunday at 5 pm, if this week's guardian has 25% HP or less, say so.
+mode: single
+triggers:
+  - trigger: time
+    at: "17:00:00"
+conditions:
+  - condition: time
+    weekday: [sun]
+  - condition: numeric_state
+    entity_id: sensor.user_labyrinth
+    above: 0
+    below: 26
+actions:
+  - action: notify.mobile_app_your_phone
+    data:
+      title: "[Guardian weakened]"
+      message: >
+        {{ state_attr('sensor.user_labyrinth', 'guardian') }} has {{ states('sensor.user_labyrinth') }}% HP left
+        and the floor closes at midnight. One more quest could finish it.
+      data:
+        clickAction: /life-rpg
+        url: /life-rpg

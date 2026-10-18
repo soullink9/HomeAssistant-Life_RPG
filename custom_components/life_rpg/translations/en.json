@@ -1,0 +1,482 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Create an adventurer",
+        "description": "Each health sensor you pick becomes a daily quest. Leave a sensor empty to skip that quest, or tick it under \"Log in Home Assistant\" to log it yourself. The race is chosen for life; its gift evolves as you level.",
+        "data": {
+          "name": "Adventurer name",
+          "user_id": "Home Assistant user",
+          "race": "Race",
+          "steps_entity": "Steps sensor (Stamina)",
+          "steps_goal": "Daily step goal",
+          "sleep_entity": "Sleep duration sensor (Vitality)",
+          "sleep_goal": "Sleep goal",
+          "bedtime_quest": "Bedtime quest (Wisdom)",
+          "bedtime_goal": "Bedtime target",
+          "clock": "Clock",
+          "floors_entity": "Floors climbed sensor (Strength)",
+          "floors_goal": "Daily floors goal",
+          "hydration_entity": "Hydration sensor (Intelligence)",
+          "water_unit": "Water unit",
+          "hydration_goal": "Daily water goal",
+          "body": "Body",
+          "manual_quests": "Log in Home Assistant",
+          "corrections": "Allow corrections",
+          "goddess_name": "Goddess name"
+        },
+        "data_description": {
+          "name": "Entity ids start with this, e.g. User gives sensor.user_level.",
+          "steps_entity": "Health Connect: Daily steps.",
+          "sleep_entity": "Health Connect: Sleep duration. Sleep counts toward the day you wake up.",
+          "bedtime_goal": "Full credit for falling asleep by this time, fading to zero an hour later.",
+          "floors_entity": "Health Connect: Daily floors (an elevation sensor in m or ft also works).",
+          "hydration_entity": "Health Connect: Daily hydration. Log water in Samsung Health or any app that writes to Health Connect.",
+          "bedtime_quest": "Full credit for falling asleep by your bedtime. The time comes from your sleep sensor (its session start, sleep stages, or the phone app's sleep start sensor), or from sleep you log here.",
+          "user_id": "This person sees the adventurer in the System panel and can open chests, change gear and jobs, and answer daily choices.",
+          "race": "Your racial gift starts here and evolves at levels 10 and 30, down the branch your habits favour.",
+          "body": "How your adventurer is drawn and painted. You can change it later under Configure → Art and AI.",
+          "manual_quests": "For quests your phone can't report (iPhone sleep and water, or Samsung Health water and floors). Log them with panel buttons, button entities, NFC tags, Assist or the life_rpg.log actions. Works on top of a sensor too.",
+          "water_unit": "How you count water: millilitres or US fluid ounces. Used for the goal, the panel, the buttons (a glass is 250 mL or 8 fl oz) and the log action.",
+          "hydration_goal": "In the water unit above. For example 2000 mL, or 64 fl oz.",
+          "goddess_name": "Optional. She's called Lune unless you name her (for example after your voice assistant). You can change it later under Configure → Goddess.",
+          "clock": "How times of day are shown in the game (bedtime, deadlines, the log): 12-hour with AM/PM or 24-hour.",
+          "corrections": "Lets you set today's real count (and fix a record) for these quests, from the panel, the life_rpg.correct action or Assist. Off by default so nobody can just type in a number: turn one on when a sensor got it wrong, fix it, then turn it off again."
+        }
+      }
+    },
+    "error": {
+      "no_sources": "Pick at least one sensor, or a quest to log in Home Assistant.",
+      "goal_floz": "In fl oz a daily goal is between 8 and 300 (64 fl oz is about 2 litres). Was it still in mL?",
+      "goal_ml": "In mL a daily goal is between 250 and 6000."
+    },
+    "abort": {
+      "already_configured": "A player with this name already exists."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configure adventurer",
+        "menu_options": {
+          "quests": "Quests and goals",
+          "bounties": "Bounties",
+          "goddess": "Goddess",
+          "work": "Working hours and emergencies",
+          "studio": "Art and AI"
+        }
+      },
+      "quests": {
+        "title": "Quests and goals",
+        "description": "Change the linked user, sensors and goals. Level, gear, titles and streak are kept. Your race can't be changed.",
+        "data": {
+          "user_id": "Home Assistant user",
+          "steps_entity": "Steps sensor (Stamina)",
+          "steps_goal": "Daily step goal",
+          "sleep_entity": "Sleep duration sensor (Vitality)",
+          "sleep_goal": "Sleep goal",
+          "bedtime_quest": "Bedtime quest (Wisdom)",
+          "bedtime_goal": "Bedtime target",
+          "clock": "Clock",
+          "floors_entity": "Floors climbed sensor (Strength)",
+          "floors_goal": "Daily floors goal",
+          "hydration_entity": "Hydration sensor (Intelligence)",
+          "water_unit": "Water unit",
+          "hydration_goal": "Daily water goal",
+          "manual_quests": "Log in Home Assistant",
+          "corrections": "Allow corrections"
+        },
+        "data_description": {
+          "bedtime_goal": "Full credit for falling asleep by this time, fading to zero an hour later.",
+          "bedtime_quest": "Full credit for falling asleep by your bedtime. The time comes from your sleep sensor (its session start, sleep stages, or the phone app's sleep start sensor), or from sleep you log here.",
+          "manual_quests": "For quests your phone can't report (iPhone sleep and water, or Samsung Health water and floors). Log them with panel buttons, button entities, NFC tags, Assist or the life_rpg.log actions. Works on top of a sensor too.",
+          "water_unit": "How you count water: millilitres or US fluid ounces. Used for the goal, the panel, the buttons (a glass is 250 mL or 8 fl oz) and the log action.",
+          "hydration_goal": "In the water unit above. For example 2000 mL, or 64 fl oz.",
+          "clock": "How times of day are shown in the game (bedtime, deadlines, the log): 12-hour with AM/PM or 24-hour.",
+          "corrections": "Lets you set today's real count (and fix a record) for these quests, from the panel, the life_rpg.correct action or Assist. Off by default so nobody can just type in a number: turn one on when a sensor got it wrong, fix it, then turn it off again."
+        }
+      },
+      "studio": {
+        "title": "Art and AI",
+        "description": "Choose painted art or pixel art. Paintings come from your own ComfyUI ({found} models found in its {folder} folder); until a painting is ready, and for anything you don't paint, the built-in pixel art stands in. Words come from an AI Task entity, such as one added under your Ollama integration; without one, the game uses its built-in lines. For a custom ComfyUI workflow, save it in API format as {workflow}.",
+        "data": {
+          "body": "Body",
+          "comfyui_url": "ComfyUI address",
+          "model_family": "Model type",
+          "checkpoint": "Checkpoint",
+          "paint": "Paint",
+          "ai_task_entity": "AI Task entity",
+          "llm_features": "LLM features",
+          "art_style": "Art style",
+          "paint_speed": "Painting speed",
+          "fast_model": "My model is a fast variant (Lightning, Turbo, Hyper or Schnell)",
+          "edit_model": "Image-edit model (optional)"
+        },
+        "data_description": {
+          "body": "Used in portraits.",
+          "comfyui_url": "For example http://192.168.1.20:8188. Home Assistant must be able to reach it.",
+          "model_family": "SDXL and Flux (all-in-one) use a model from ComfyUI's models/checkpoints folder. Flux (separate files) uses a model from models/diffusion_models, such as flux1-dev.safetensors, plus its text encoders (clip_l and t5xxl) and VAE (ae.safetensors), which are found automatically. Custom uses your own workflow.json with %PROMPT%, %NEGATIVE%, %SEED%, %WIDTH%, %HEIGHT%, %OUT_WIDTH%, %OUT_HEIGHT% and %PREFIX% placeholders.",
+          "checkpoint": "The model file. The list shows what ComfyUI has for the model type you saved last; after changing the model type, save once and the list updates. A fantasy-capable SDXL fine-tune or Flux dev works well.",
+          "paint": "What gets painted. Anything you leave off uses pixel art.",
+          "ai_task_entity": "Leave empty to use Home Assistant's default AI Task entity.",
+          "llm_features": "Talking to the goddess, written flavour (morning messages, choices, emergencies, item lore, weekly chronicle) and haggling with the merchant.",
+          "art_style": "Pixel art needs nothing else and ignores ComfyUI and any saved paintings. Painted uses ComfyUI, with pixel art as the stand-in.",
+          "paint_speed": "Quality paints everything at full size. Balanced paints items smaller and puts what's on screen first. Fast also uses fewer steps, loads a full-size Flux model at half the memory (so it can share the GPU with Ollama), and leaves common gear in your inventory as pixel art.",
+          "fast_model": "These models need only 4 to 8 steps and a low guidance; turn this on and the game uses those settings (much faster).",
+          "edit_model": "For characters whose face stays the same in every picture. Pick an edit model from models/diffusion_models: Flux Kontext (flux1-kontext-dev, uses the same text encoders and VAE as Flux) or Qwen Image Edit (needs qwen_2.5_vl_7b in models/text_encoders and qwen_image_vae in models/vae). You, the goddess and the merchant then get one base painting each, and every mood, outfit and backdrop is an edit of it. Leave empty to paint every picture from scratch."
+        }
+      },
+      "work": {
+        "title": "Working hours and emergencies",
+        "description": "Emergency quests pop up at random between 10:00 and 18:30. While you're at work, failing or declining one costs nothing. Outside working hours, failing one costs a little gold (30 + 2 per level, at most 200, never more than 10% of your gold) and declining costs half that.",
+        "data": {
+          "emergency_penalty": "Emergency penalties",
+          "work_days": "Work days",
+          "work_start": "Work starts",
+          "work_end": "Work ends",
+          "work_entity": "At work when this is on"
+        },
+        "data_description": {
+          "emergency_penalty": "Turn off and emergencies never cost anything.",
+          "work_end": "An end time earlier than the start time means a night shift that runs past midnight.",
+          "work_entity": "Optional. A schedule helper, work calendar, binary sensor or input boolean. When set, it decides instead of the days and hours above: on means you're at work. If it's unavailable, the hours above are used."
+        }
+      },
+      "goddess": {
+        "title": "Goddess",
+        "description": "Her name is used everywhere: panel, titles, blessings, notifications, paintings, conversations and Assist.",
+        "data": {
+          "goddess_name": "Goddess name",
+          "goddess_persona": "Goddess personality",
+          "chat_agent": "Talk through this conversation agent"
+        },
+        "data_description": {
+          "goddess_name": "Leave empty for Lune.",
+          "goddess_persona": "With your own assistant's model in the AI Task, \"Keep the model's own personality\" lets her sound like herself, with only the game's role added.",
+          "chat_agent": "Optional. Pick your own assistant (for example your Ollama agent) and she answers in its own voice and personality, with the game's facts passed along with each message. Leave empty to use the AI Task entity from Art and AI."
+        }
+      },
+      "bounties": {
+        "title": "Bounties",
+        "description": "The bounty board on the Quests tab. Daily side quests are small healthy tasks (written by your AI if it's set up), done on your honour, for a little XP and gold; one of them each day holds a bounty chest. In kids mode a parent can post chores with their own rewards, and a chore pays out only when a parent approves it.",
+        "data": {
+          "daily_bounties": "Daily side quests",
+          "kids_mode": "Kids mode"
+        },
+        "data_description": {
+          "daily_bounties": "How many appear each morning, 0 to 10 (0 turns them off). Up to three each pay about 30 XP plus one per level and some gold; past three the same total is shared out a little thinner, so more side quests add a bit more, not a lot more. One of them each day holds a bounty chest.",
+          "kids_mode": "A parent (any Home Assistant admin) opens this adventurer in the System panel to post chores (once, daily or weekly) with XP, gold or a chest, and approves them when they're done. Link the child's own, non-admin Home Assistant user to this adventurer so they can't approve their own chores."
+        }
+      }
+    },
+    "error": {
+      "no_sources": "Pick at least one sensor, or a quest to log in Home Assistant.",
+      "cannot_connect": "Can't reach ComfyUI at this address.",
+      "pick_checkpoint": "Pick the checkpoint to paint with.",
+      "no_workflow": "Save your workflow (API format) as life_rpg/workflow.json in your config folder first.",
+      "bad_url": "Use an http:// or https:// address.",
+      "goal_floz": "In fl oz a daily goal is between 8 and 300 (64 fl oz is about 2 litres). Was it still in mL?",
+      "goal_ml": "In mL a daily goal is between 250 and 6000.",
+      "not_in_folder": "ComfyUI has no such model in models/checkpoints. Pick one from the list (a Flux model in models/diffusion_models needs the model type \"Flux, separate files\").",
+      "not_in_folder_unet": "ComfyUI has no such model in models/diffusion_models. Pick one from the list (the list updates after you save the model type once).",
+      "flux_parts": "Flux in separate files also needs these in ComfyUI, and they weren't found: {missing}.",
+      "edit_parts": "The edit model also needs these in ComfyUI, and they weren't found: {missing}."
+    }
+  },
+  "entity": {
+    "event": {
+      "achievements": {
+        "name": "Achievements",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "level_up": "Level up",
+              "rank_up": "Rank up",
+              "quest_complete": "Quest complete",
+              "day_cleared": "Day cleared",
+              "perfect_day": "Perfect day",
+              "streak_milestone": "Streak milestone",
+              "personal_record": "Personal record",
+              "attribute_up": "Attribute up",
+              "skill_up": "Skill up",
+              "job_change": "Job change",
+              "job_level": "Job level",
+              "race_evolved": "Race evolved",
+              "title_earned": "Title earned",
+              "badge_earned": "Badge earned",
+              "hidden_quest": "Hidden quest",
+              "emergency_quest": "Emergency quest",
+              "emergency_cleared": "Emergency cleared",
+              "emergency_failed": "Emergency failed",
+              "penalty_quest": "Penalty quest",
+              "penalty_cleared": "Penalty cleared",
+              "streak_broken": "Streak broken",
+              "shield_earned": "Shield earned",
+              "shield_used": "Shield used",
+              "guardian_appeared": "Guardian appeared",
+              "guardian_defeated": "Guardian defeated",
+              "chest_dropped": "Chest dropped",
+              "devotion_up": "Devotion up",
+              "choice_offered": "Choice offered",
+              "choice_won": "Choice won",
+              "choice_lost": "Choice lost",
+              "bargain_struck": "Bargain struck",
+              "emergency_declined": "Emergency declined",
+              "goddess_gift": "Gift from the goddess",
+              "reading_held": "Reading held back",
+              "bounty_claimed": "Bounty claimed",
+              "bounty_done": "Bounty done",
+              "market_restocked": "New stock at the market"
+            }
+          }
+        }
+      }
+    },
+    "sensor": {
+      "level": {
+        "name": "Level"
+      },
+      "level_progress": {
+        "name": "Level progress"
+      },
+      "xp": {
+        "name": "XP"
+      },
+      "xp_today": {
+        "name": "XP today"
+      },
+      "streak": {
+        "name": "Streak"
+      },
+      "rank": {
+        "name": "Adventurer rank"
+      },
+      "job": {
+        "name": "Job"
+      },
+      "title": {
+        "name": "Title"
+      },
+      "race": {
+        "name": "Racial gift"
+      },
+      "chests": {
+        "name": "Chests"
+      },
+      "emergency_quest": {
+        "name": "Emergency quest"
+      },
+      "devotion": {
+        "name": "Devotion"
+      },
+      "stamina": {
+        "name": "Stamina"
+      },
+      "strength": {
+        "name": "Strength"
+      },
+      "vitality": {
+        "name": "Vitality"
+      },
+      "intelligence": {
+        "name": "Intelligence"
+      },
+      "wisdom": {
+        "name": "Wisdom"
+      },
+      "stamina_quest": {
+        "name": "Stamina quest"
+      },
+      "strength_quest": {
+        "name": "Strength quest"
+      },
+      "vitality_quest": {
+        "name": "Vitality quest"
+      },
+      "intelligence_quest": {
+        "name": "Intelligence quest"
+      },
+      "wisdom_quest": {
+        "name": "Wisdom quest"
+      },
+      "labyrinth": {
+        "name": "Labyrinth guardian"
+      },
+      "daily_choice": {
+        "name": "Daily choice"
+      },
+      "gold": {
+        "name": "Gold"
+      }
+    },
+    "button": {
+      "log_water": {
+        "name": "Log a glass of water"
+      },
+      "log_floor": {
+        "name": "Log a flight of stairs"
+      }
+    }
+  },
+  "selector": {
+    "body": {
+      "options": {
+        "androgynous": "Androgynous",
+        "feminine": "Feminine",
+        "masculine": "Masculine"
+      }
+    },
+    "model_family": {
+      "options": {
+        "sdxl": "SDXL (or SD 1.5)",
+        "flux": "Flux, all-in-one checkpoint",
+        "custom": "Custom workflow",
+        "flux_unet": "Flux, separate files (diffusion_models)"
+      }
+    },
+    "paint": {
+      "options": {
+        "portrait": "My adventurer",
+        "items": "Gear, potions, charms and cosmetics",
+        "guardians": "Labyrinth guardians",
+        "characters": "The goddess, the merchant and other characters"
+      }
+    },
+    "llm_features": {
+      "options": {
+        "lune_chat": "Talk to the goddess",
+        "flavour": "Written flavour",
+        "haggling": "Haggling"
+      }
+    },
+    "art_style": {
+      "options": {
+        "painted": "Painted (ComfyUI), pixel art until ready",
+        "pixel": "Pixel art only"
+      }
+    },
+    "manual_quests": {
+      "options": {
+        "hydration": "Drink water",
+        "floors": "Climb (flights of stairs)",
+        "sleep": "Rest and Lights out (bedtime, with or without a wake-up time)"
+      }
+    },
+    "goddess_persona": {
+      "options": {
+        "goddess": "A playful moon goddess (built in)",
+        "own": "Keep the model's own personality"
+      }
+    },
+    "log_quest": {
+      "options": {
+        "hydration": "Drink water (mL)",
+        "floors": "Climb (flights of stairs)"
+      }
+    },
+    "weekday": {
+      "options": {
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday",
+        "sat": "Saturday",
+        "sun": "Sunday"
+      }
+    },
+    "water_unit": {
+      "options": {
+        "ml": "Millilitres (mL)",
+        "floz": "US fluid ounces (fl oz)"
+      }
+    },
+    "correct_quest": {
+      "options": {
+        "steps": "Steps",
+        "floors": "Floors",
+        "hydration": "Water"
+      }
+    },
+    "clock": {
+      "options": {
+        "12": "12-hour (11:00 PM)",
+        "24": "24-hour (23:00)"
+      }
+    },
+    "corrections": {
+      "options": {
+        "steps": "Walk (steps)",
+        "floors": "Climb (floors)",
+        "hydration": "Drink water"
+      }
+    },
+    "paint_speed": {
+      "options": {
+        "quality": "Quality",
+        "balanced": "Balanced",
+        "fast": "Fast"
+      }
+    }
+  },
+  "services": {
+    "log": {
+      "name": "Log a quest",
+      "description": "Add water or flights of stairs to today's quest. A negative amount takes some back.",
+      "fields": {
+        "adventurer": {
+          "name": "Adventurer",
+          "description": "Leave empty for your own (or the only) adventurer."
+        },
+        "quest": {
+          "name": "Quest",
+          "description": "Which quest to add to."
+        },
+        "amount": {
+          "name": "Amount",
+          "description": "Water in the adventurer's water unit (mL or fl oz), or flights of stairs."
+        }
+      }
+    },
+    "log_sleep": {
+      "name": "Log sleep",
+      "description": "Record last night's sleep, for phones that can't share it (it counts toward today). With only a bedtime, just Lights out is logged and Rest is left to your sleep sensor.",
+      "fields": {
+        "adventurer": {
+          "name": "Adventurer",
+          "description": "Leave empty for your own (or the only) adventurer."
+        },
+        "bedtime": {
+          "name": "Fell asleep",
+          "description": "22:30, or a full date and time."
+        },
+        "wake": {
+          "name": "Woke up",
+          "description": "06:45, or a full date and time (today). Leave empty to log only when you fell asleep."
+        }
+      }
+    },
+    "correct": {
+      "name": "Correct a count",
+      "description": "Set today's real count for steps, floors or water when a sensor got it wrong (for example two apps counting the same steps), and/or fix an all-time record.",
+      "fields": {
+        "adventurer": {
+          "name": "Adventurer",
+          "description": "Leave empty for your own (or the only) adventurer."
+        },
+        "quest": {
+          "name": "Quest",
+          "description": "Which quest to correct."
+        },
+        "today": {
+          "name": "Today",
+          "description": "The real count for today (water in the adventurer's water unit)."
+        },
+        "record": {
+          "name": "Record",
+          "description": "Your real all-time best for this quest."
+        }
+      }
+    }
+  }
+}

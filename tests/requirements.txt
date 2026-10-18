@@ -1,0 +1,5 @@
+# What the tests need beyond Python 3.13 itself. The engine tests (test_game.py, sim_longrun.py) need nothing;
+# the Home Assistant tests in tests/ha need voluptuous, and use Pillow when it's there (as Home Assistant does).
+voluptuous
+pillow
+ruff

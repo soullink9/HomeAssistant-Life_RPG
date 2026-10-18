@@ -1,0 +1,67 @@
+# Checks every push and pull request. Everything here can also be run locally; see CONTRIBUTING.md.
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint and format (ruff), script syntax (node)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: pip install ruff
+      - run: ruff check custom_components tests
+      - run: ruff format --check custom_components tests
+      - name: Frontend scripts parse
+        run: for f in custom_components/life_rpg/frontend/*.js; do node --check "$f"; done
+
+  engine:
+    name: Engine tests and a 3-year soak
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python tests/test_game.py
+      # five player profiles x two seeds, 3 years each (the full check is 30 years: see CONTRIBUTING.md)
+      - run: python tests/sim_longrun.py 3 1 2
+
+  home-assistant:
+    name: Home Assistant side (stand-ins, fake ComfyUI and LLM)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install voluptuous pillow
+      - run: python tests/ha/test_integration.py
+      - run: python tests/ha/soak.py 0.5 sdxl
+      - run: python tests/ha/soak.py 0.5 flux_unet
+
+  hassfest:
+    name: Home Assistant's integration checks (hassfest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: home-assistant/actions/hassfest@master
+
+  hacs:
+    name: HACS checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hacs/action@main
+        with:
+          category: integration
+          # brand images ship inside the integration (custom_components/life_rpg/brand), not in home-assistant/brands
+          ignore: brands

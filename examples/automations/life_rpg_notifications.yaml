@@ -1,0 +1,57 @@
+# System notifications on your phone for the moments that matter
+# Settings → Automations & scenes → Create automation → Create new automation → ⋮ → Edit in YAML.
+# Select everything in the editor, paste this whole file over it, then change
+# notify.mobile_app_your_phone to your phone and "user_" to your adventurer's prefix. Save.
+alias: Life RPG - System notifications
+description: Emergency quests (and their fines), penalty quests, choices, level and rank ups, guardians, jobs, skills, hidden quests, evolutions.
+mode: queued
+triggers:
+  - trigger: state
+    entity_id: event.user_achievements
+conditions:
+  - condition: template
+    value_template: >
+      {{ trigger.from_state is not none
+         and trigger.from_state.state not in ['unavailable', 'unknown']
+         and trigger.to_state.attributes.event_type in
+           ['emergency_quest', 'emergency_failed', 'penalty_quest', 'choice_offered', 'choice_won', 'level_up', 'rank_up',
+            'guardian_appeared', 'guardian_defeated', 'job_level', 'skill_up', 'hidden_quest', 'race_evolved',
+            'title_earned', 'streak_milestone', 'personal_record', 'perfect_day', 'shield_used', 'devotion_up'] }}
+actions:
+  - variables:
+      e: "{{ trigger.to_state.attributes }}"
+  - action: notify.mobile_app_your_phone
+    data:
+      title: >
+        {{ {'emergency_quest': '[Emergency quest]', 'emergency_failed': '[Emergency failed]', 'penalty_quest': '[Penalty quest]', 'choice_offered': '[A choice appears]',
+            'choice_won': '[Choice won]', 'level_up': '[Level up]', 'rank_up': '[Rank up]',
+            'guardian_appeared': '[Floor ' ~ e.floor ~ ']', 'guardian_defeated': '[Guardian defeated]',
+            'job_level': '[Job level up]', 'skill_up': '[Skill proficiency up]', 'hidden_quest': '[Hidden quest cleared]',
+            'race_evolved': '[Racial gift evolved]', 'title_earned': '[Title acquired]', 'streak_milestone': '[Streak milestone]',
+            'personal_record': '[Limit broken]', 'perfect_day': '[Perfect day]', 'shield_used': '[Shield used]',
+            'devotion_up': '[Devotion deepens]'}[e.event_type] }}
+      message: >
+        {% set t = e.event_type %}
+        {% if t == 'emergency_quest' %}{{ e.title }}. You have {{ e.minutes }} minutes. {{ 'Working hours: failing costs nothing.' if e.excused else 'Failing costs ' ~ e.fine ~ ' gold.' }}
+        {% elif t == 'emergency_failed' %}{% if not e.excused %}Time ran out. −{{ e.fine }} gold.{% elif e.why == 'work' %}Penalty: −{{ e.would_be }} gold… ERROR. ERROR. Working hours detected. Failing costs nothing.{% else %}Time ran out. No penalty this time.{% endif %}
+        {% elif t == 'penalty_quest' %}Finish {{ e.need }} quests today to save your {{ e.streak }}-day streak.
+        {% elif t == 'choice_offered' %}{{ e.text }} Answer in the System panel before 2 pm.
+        {% elif t == 'choice_won' %}+{{ e.xp }} XP.
+        {% elif t == 'level_up' %}You have reached level {{ e.level }}.
+        {% elif t == 'rank_up' %}You are now {{ e.rank }}-rank.
+        {% elif t == 'guardian_appeared' %}{{ e.guardian }}{{ ' (elite)' if e.elite }}{{ ' (cursed)' if e.cursed }} guards this week's floor. {{ e.trait }}.
+        {% elif t == 'guardian_defeated' %}{{ e.guardian }} falls. +{{ e.xp }} XP. Floor {{ e.next_floor }} opens Monday.
+        {% elif t == 'job_level' %}{{ e.job }} level {{ e.level }}: {{ e.title }}.
+        {% elif t == 'skill_up' %}{{ e.skill }} has reached {{ e.grade }}.
+        {% elif t == 'hidden_quest' %}{{ e.quest }}. +{{ e.xp }} XP and a chest.
+        {% elif t == 'race_evolved' %}Your {{ e.race }} gift became {{ e.gift }}.
+        {% elif t == 'title_earned' %}“{{ e.title }}”
+        {% elif t == 'streak_milestone' %}{{ e.streak }} days without falling.
+        {% elif t == 'personal_record' %}{{ e.value }} beats your best of {{ e.previous }}. +{{ e.xp }} XP.
+        {% elif t == 'perfect_day' %}Every quest cleared. +{{ e.xp }} XP and a better chest.
+        {% elif t == 'devotion_up' %}{{ e.tier }}.{{ ' Blessing: ' ~ e.blessing ~ '.' if e.blessing }}
+        {% else %}A shield protected your {{ e.streak }}-day streak. {{ e.shields }} left.{% endif %}
+      data:
+        clickAction: /life-rpg
+        url: /life-rpg
+        tag: "life-rpg-{{ e.event_type }}"

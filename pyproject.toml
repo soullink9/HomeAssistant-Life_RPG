@@ -1,0 +1,25 @@
+# Tooling settings only: Home Assistant installs the integration from custom_components/life_rpg,
+# so nothing here is needed to run it. CI (.github/workflows/ci.yml) uses these.
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+# pyflakes, pycodestyle, bugbear, import order, simplifications, comprehensions, and a docstring on everything
+select = ["F", "E", "W", "B", "I", "SIM", "C4", "D1"]
+ignore = [
+    "E501",  # the formatter sets line length; long prompt strings and data rows are left whole
+    "B905",  # zip() without strict=: the pairs in this code are always the same length
+]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true  # Home Assistant's import style
+known-first-party = ["life_rpg"]
+combine-as-imports = true
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["C408", "SIM102", "SIM105", "SIM113", "E741", "E731"]  # tests favour short, direct code over style
+# the Home Assistant stand-ins mirror Home Assistant's own classes, so they carry no docstrings of their own
+"tests/ha/*" = ["C408", "SIM102", "SIM105", "SIM113", "E741", "E731", "E402", "E702", "D101", "D102", "D105", "D107"]
+"tests/ha/stubs.py" = ["C408", "E402", "E702", "E731", "D1"]

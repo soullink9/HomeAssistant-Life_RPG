@@ -1,0 +1,25 @@
+# Kids mode: tell a parent when a child says a chore is done
+# Settings → Automations & scenes → Create automation → Create new automation → ⋮ → Edit in YAML.
+# Paste this whole file, then change event.kid_achievements to the child's event entity and
+# notify.mobile_app_parent_phone to the parent's phone. Save.
+alias: Life RPG - Chore waiting for approval
+description: A child marked a chore done on the bounty board; open the System panel to approve it.
+mode: queued
+triggers:
+  - trigger: state
+    entity_id: event.kid_achievements
+conditions:
+  - condition: template
+    value_template: >
+      {{ trigger.from_state is not none
+         and trigger.from_state.state not in ['unavailable', 'unknown']
+         and trigger.to_state.attributes.event_type == 'bounty_claimed' }}
+actions:
+  - action: notify.mobile_app_parent_phone
+    data:
+      title: "[Chore done?]"
+      message: "{{ trigger.to_state.attributes.bounty }} is waiting for your approval."
+      data:
+        clickAction: /life-rpg
+        url: /life-rpg
+        tag: life-rpg-chore

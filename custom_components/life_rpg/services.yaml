@@ -1,0 +1,70 @@
+log:
+  fields:
+    adventurer:
+      selector:
+        config_entry:
+          integration: life_rpg
+    quest:
+      required: true
+      default: hydration
+      selector:
+        select:
+          options:
+            - hydration
+            - floors
+          translation_key: log_quest
+    amount:
+      required: true
+      default: 250
+      selector:
+        number:
+          min: -5000
+          max: 5000
+          step: 1
+          mode: box
+log_sleep:
+  fields:
+    adventurer:
+      selector:
+        config_entry:
+          integration: life_rpg
+    bedtime:
+      required: true
+      example: "22:30"
+      selector:
+        text:
+    wake:
+      required: false
+      example: "06:45"
+      selector:
+        text:
+correct:
+  fields:
+    adventurer:
+      selector:
+        config_entry:
+          integration: life_rpg
+    quest:
+      required: true
+      default: steps
+      selector:
+        select:
+          options:
+            - steps
+            - floors
+            - hydration
+          translation_key: correct_quest
+    today:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          step: 1
+          mode: box
+    record:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          step: 1
+          mode: box
