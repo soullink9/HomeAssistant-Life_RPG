@@ -20,7 +20,7 @@ how to check a change, and how to release one.
 
 ## Where things live
 
-The [Files table in the README](README.md#files) has the full map. The usual places to make a change:
+The [Development page in the wiki](https://github.com/soullink9/HomeAssistant-Life_RPG/wiki/Development) has the full file map. The usual places to make a change:
 
 | To change | Look in |
 |---|---|
@@ -41,7 +41,7 @@ Add an Assist tool in `llm_api.py` if it makes sense by voice.
 
 **Adding an event:** add it to `EVENT_TYPES` in `engine/rules.py`, give it a line in `describe()` in
 `frontend/life-rpg.js` (toasts and the log), add it to `translations/en.json` under `entity.event.achievements`, and list it
-in the README's Entities section.
+in the wiki's [Screens and Entities](https://github.com/soullink9/HomeAssistant-Life_RPG/wiki/Screens-and-Entities) page.
 
 **Adding an option:** the form is in `config_flow.py`, its labels in `translations/en.json`, and the option is
 read in `coordinator.py`. Options apply without losing progress (the entry reloads).
@@ -72,6 +72,10 @@ on every push.
 
 Code style: `ruff` settles formatting and import order (see `pyproject.toml`). Every function and class has a
 docstring, and comments say why, not what. In the panel, keep to plain JavaScript modules with no build step.
+
+## Documentation
+
+The README is the short front page (it's also what HACS shows). Everything else lives in the [wiki](https://github.com/soullink9/HomeAssistant-Life_RPG/wiki), which is its own git repository: `git clone https://github.com/soullink9/HomeAssistant-Life_RPG.wiki.git`. When a change alters something the wiki describes (a number, an option, a screen), update the wiki page too.
 
 ## Releasing
 
