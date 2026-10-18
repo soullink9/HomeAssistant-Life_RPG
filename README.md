@@ -1,3 +1,9 @@
+This project was primarily created for personal use and for my family. While I may provide updates, they are not guaranteed. However, if you've stumbled upon this and find it interesting, feel free to download and use it. I had a great time building this and hope you enjoy it.
+
+Note: Built with the assistance of Claude.ai. I’m putting it here now so you don't have to hunt for it below.
+
+========================================================================================================================
+
 # Life RPG: the System
 
 A game for Home Assistant. Your phone's health sensors become daily quests, and the rest is an RPG built to be played for years.
